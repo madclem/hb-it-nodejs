@@ -9,5 +9,11 @@ module.exports = {
   // Put your normal webpack config below here
   module: {
     rules,
-  }
+  },
+  output: {
+    publicPath: '/'
+  },
+  devServer: {
+    historyApiFallback: true,
+  },
 };

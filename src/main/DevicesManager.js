@@ -25,6 +25,10 @@ class DevicesManager {
     this.devicesIds[id] = len - 1;
   }
 
+  getDevicesHB () {
+    return this.devices;
+  }
+
   getHB (deviceId){
     let indexArray = this.devicesIds[deviceId]
     

@@ -2,6 +2,7 @@ import { BrowserWindow, app, ipcMain } from 'electron';
 import { onDeviceConnect, onDeviceDisconnect } from './main/signals';
 
 import DevicesManager from './main/DevicesManager';
+// import NobleManager from './main/NobleManager';
 import path from 'path';
 
 // Handle creating/removing shortcuts on Windows when installing/uninstalling.
@@ -9,10 +10,10 @@ if (require('electron-squirrel-startup')) { // eslint-disable-line global-requir
   app.quit();
 }
 
-ipcMain.on('synchronous-message', (event, arg) => {
-  console.log(arg) // prints "ping"
-  event.returnValue = 'pong'
-})
+// ipcMain.on('synchronous-message', (event, arg) => {
+//   console.log(arg) // prints "ping"
+//   event.returnValue = 'pong'
+// })
 
 let mainWindow = null;
 const createWindow = () => {
@@ -61,7 +62,10 @@ app.on('activate', () => {
 });
 
 app.on('ready', () => {
-  // console.log('noble', noble)
+  let isScanning = false;
+  const noble = require('@abandonware/noble');
+  
+  // SIGNALS FROM DEVICES
   onDeviceConnect.add((id)=>{
     if (mainWindow) {
       mainWindow.webContents.send('device-ready')
@@ -69,38 +73,61 @@ app.on('ready', () => {
   });
 
   onDeviceDisconnect.add((id, message)=>{
-    
+    // TODO: Send signal to remove device from list when disconnected
   });
 
-  const noble = require('@abandonware/noble');
+
   noble.on('stateChange', function (state) {
-    if (state === 'poweredOn') {
-      noble.startScanning(['180d'], true);
-    } else {
-      noble.stopScanning();
-    }
+    console.log(`noble state has changed ${state}`);
+    if (state !== 'poweredOn') noble.stopScanning();
+    // else noble.startScanning(['180d'], true);
   });
-  
-  console.log(DevicesManager.devices)
-  
+    
   noble.on('discover', function (peripheral) {
     // console.log('peripheral', peripheral)
     if (!peripheral.advertisement.localName || !peripheral.connectable) return;
     
     DevicesManager.addDevice(peripheral)
   });
+
+  
+  /**
+   * COMMUNICATION
+   */
+  
+  ipcMain.on('start-scanning', (event) => {
+    if (isScanning) {
+      event.returnValue = 'already scanning';
+
+      mainWindow.webContents.send('device-ready')
+      return;
+    }
+    isScanning = true;
+    noble.startScanning(['180d'], true);
+    event.returnValue = 'start scanning'
+  })
+
+  ipcMain.on('stop-scanning', (event) => {
+    isScanning = false;
+    noble.stopScanning();
+    event.returnValue = 'stop scanning'
+  })
+
+  ipcMain.on('device-request', (event) => {
+    console.log('DEVICE-REQUEST');
+    event.returnValue = DevicesManager.devices;
+  })
+  
+  ipcMain.on('heartbeats-devices-request', (event) => {
+    event.returnValue = DevicesManager.getDevicesHB();
+  });
+
+  ipcMain.on('heartbeat-request', (event, idDevice) => {
+    const result = DevicesManager.getHB(idDevice);
+    console.log('HEARBEAT-REQUEST', idDevice, result);
+    event.returnValue = result;
+  })
 });
-
-ipcMain.on('device-request', (event) => {
-  console.log('DEVICE-REQUEST');
-  event.returnValue = DevicesManager.devices;
-})
-
-ipcMain.on('heartbeat-request', (event, idDevice) => {
-  const result = DevicesManager.getHB(idDevice);
-  console.log('HEARBEAT-REQUEST', idDevice, result);
-  event.returnValue = result;
-})
 
 // In this file you can include the rest of your app's specific main process
 // code. You can also put them in separate files and import them here.
