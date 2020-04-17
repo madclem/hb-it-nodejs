@@ -11,7 +11,6 @@ export class HeartbeatsManager {
 
   getHearbeats() {
     const hearbeats = ipcRenderer.sendSync('heartbeats-devices-request');
-
     this.onHeartbeatCallback(hearbeats);
   }
 

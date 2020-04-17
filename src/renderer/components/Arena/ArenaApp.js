@@ -1,11 +1,8 @@
-import { Container, Text } from 'pixi.js';
+import { BaseRenderTexture, Container, Rectangle, RenderTexture, Sprite, Text } from 'pixi.js';
 
 import Application from '../../3d-tools/Application';
+import { Classic } from './templates';
 import { HeartbeatsManager } from './HeartbeatsManager';
-import { Player } from './Player';
-import ViewDiagramBg from './views/ViewDiagramBg';
-import { container3D } from '../../3d-tools';
-import { getCameraDistance } from '../../utils'
 
 export class ArenaApp extends Application {
   constructor (devices) {
@@ -20,54 +17,25 @@ export class ArenaApp extends Application {
 
     this.heartbeatsManager = new HeartbeatsManager(devices, this.onHeartbeat.bind(this));
 
-    this.players = [];
-    if (devices.length > 0) {
-      for (let i = 0; i < devices.length; i++) {
-        const device = devices[i];
-
-        const player = new Player(this, 10, device.id);
-        this.players.push(player)
-      }
-    } else {
-      const player = new Player(this, 10, null);
-      this.players.push(player)
-    }
-
-    this.vDiagramBg = new ViewDiagramBg(this, 10);
-    container3D.addChild(this.vDiagramBg);
+    const options = { devices, container2D: this.container, camera: this.camera, orbitalControl: this.orbitalControl };
+    this.gameTemplate = new Classic(options);
   }
 
   onHeartbeat (hbs) {
-    for (let i = 0; i < this.players.length; i++) {
-      this.players[i].onHeartbeat(); 
-    }
+    this.gameTemplate.onHeartbeat(hbs);
   }
 
   update () {
     this.heartbeatsManager.update();
-
-    for (let i = 0; i < this.players.length; i++) {
-      if (i === 0) {
-        const firstPoint = this.players[i].getFirstPoint();
-
-        this.orbitalControl.center[0] = firstPoint[0];
-		    this.orbitalControl.positionOffset[0] = firstPoint[0];
-      }
-      this.players[i].update(); 
-    }
-    this.vDiagramBg.update();
+    this.gameTemplate.update();
+    
   }
   
   resize () {
     super.resize(window.innerWidth, window.innerHeight);
     this.camera.setAspectRatio(window.innerWidth / window.innerHeight);
-		const scaleW = getCameraDistance(this.camera, this.orbitalControl, 1, true, 1);
-		const scaleH = getCameraDistance(this.camera, this.orbitalControl, 1, false, 1);
-		this.vDiagramBg.scaleX = scaleW;
-		this.vDiagramBg.scaleY = scaleH;
 
-    for (let i = 0; i < this.players.length; i++) {
-      this.players[i].resize(scaleW, this.vDiagramBg.nbSeconds);
-    }
+    this.gameTemplate.resize(window.innerWidth, window.innerHeight);
+		
   }
 }

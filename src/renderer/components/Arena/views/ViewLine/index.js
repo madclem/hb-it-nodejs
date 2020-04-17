@@ -3,7 +3,7 @@ import { getControlPoints, map } from '../../../../utils';
 import { CONSTS } from '../../../../consts';
 // ViewLine.js
 import LineGeometry from '../../../../3d-tools/geometries/LineGeometry';
-import LineMaterial from '../../../../3d-tools/materials/line/LineMaterial';
+import { LineMaterial } from '../../../../3d-tools/materials/LineMaterial';
 
 // import { ipcRenderer } from 'electron';
 
@@ -18,16 +18,14 @@ function getBezierXY(t, sx, sy, cp1x, cp1y, cp2x, cp2y, ex, ey) {
 const tempArray = [];
 class ViewLine {
 
-	constructor(scene, seconds, deviceId) {
-
-		this.deviceId = deviceId;
-		this.material = new LineMaterial();
+	constructor(color) {
+		this.material = new LineMaterial(color);
 		this.paused = false;
 		this.freq = 30;
 		this.time = 0;
 		this.heartbeat = 0;
 		this.heartbeatTarget = 0;
-		this.nbSeconds = seconds || 10;
+		this.nbSeconds = 10;
 
 		// this.hbPoints = [[0, 0, 0], [0, 0, 0], [(this.time + this.freq) * 0.01, 0, 0], [(this.time + this.freq * 2) * 0.01, 0, 0]];
 		this.hbPoints = [[0, 0]];
@@ -36,9 +34,7 @@ class ViewLine {
 		
 		this.posNextHeartbeat = 0;
 		
-		this.heartbeats = [0];
-    this.scene = scene;
-    
+		this.heartbeats = [0];    
 
 		this.points = [];
 		for (let i = 0; i < 250; i++) {
@@ -62,26 +58,20 @@ class ViewLine {
 		this.paused = false;
 	}
 
-	onHeartbeat () {
-		this.getHB()
-	}
-	
-	getHB() {
-		let hb;
-		if (this.deviceId) {
-			hb = ipcRenderer.sendSync('heartbeat-request', this.deviceId);
-			console.log(hb)
-			if (!isNaN(hb)) {
-				if (hb < 50) hb = 50;
-				hb = map (hb, 50, 190, -4, 4);
-			}
-		} 
+	onHeartbeat (hb) {
+		
+		if (!isNaN(hb)) {
+			if (hb < 50) hb = 50;
+			hb = map (hb, 50, 190, -4, 4);
+		}
+
 		this.heartbeatTarget = hb || (Math.floor((Math.random() * 2 - 2 / 2) * 100) / 100);
 
 		this.hbPoints.push([(this.time + this.freq) * 1, this.heartbeatTarget, 0]);
 
 		this.updateLine();
 	}
+	
 	
 	movePoints() {
 		const speed = this.speedX;

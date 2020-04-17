@@ -39,6 +39,14 @@ class ViewDiagramBg extends Entity3D {
 	update() {
     
     const line = this.scene.players[0].line;
+
+    let averageY = 0
+
+    for (let i = 0; i < this.scene.players.length; i++) {
+      averageY += this.scene.players[i].getFirstPoint()[1];
+    }
+
+    averageY /= this.scene.players.length;
     if (!this.paused) {
 
       this.time += 1 / 60;
@@ -46,7 +54,7 @@ class ViewDiagramBg extends Entity3D {
       this.x += line.speedX;
     }
     
-      const y = line.points[0][1];
+      const y = averageY;
       const pY = smoothstep(0.25, 1., Math.abs(y / this.scaleY) * 2)
 
       this.targetY = pY * y;

@@ -26,7 +26,14 @@ class DevicesManager {
   }
 
   getDevicesHB () {
-    return this.devices;
+    const obj = {}
+
+    for (let i = 0; i < this.devices.length; i++) {
+      const d = this.devices[i];
+      obj[d.id] = d.heartbeat;
+    }
+
+    return obj;
   }
 
   getHB (deviceId){

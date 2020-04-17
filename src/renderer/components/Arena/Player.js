@@ -3,9 +3,13 @@ import { container3D } from '../../3d-tools';
 
 export class Player {
   constructor (scene, seconds, device) {
-    this.device = device;
+    this.device = device ? device.id : null;
+    this.color = Math.random() * 0xffffff;
 
-    this.vLine = new ViewLine(device);
+    this.name = device ? device.localName : "John Doe";
+    this.heartbeat = 0;
+
+    this.vLine = new ViewLine(this.color);
     container3D.addChild(this.vLine);
   }
 
@@ -14,6 +18,7 @@ export class Player {
   }
 
   onHeartbeat (hb) {
+    this.heartbeat = hb;
     this.vLine.onHeartbeat(hb);
   }
 

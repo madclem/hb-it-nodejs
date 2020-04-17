@@ -11,6 +11,8 @@ class Container3D {
 		this._modelMatrix            = mat4.create();
 		this._matrix                 = mat4.create();
     this.defaultState = new State();
+    this.defaultState.depthTest = true;
+    this.defaultState.blend = true;
 
     this.camera = null;
 
