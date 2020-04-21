@@ -1,0 +1,45 @@
+
+*, *:before, *:after {
+  box-sizing: border-box!important;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+}
+
+.playersContainer {
+  font-family: "PTSans-Regular";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 280px;
+  margin: 5px;
+}
+
+.link {
+  position: absolute;
+  right: 10px;
+  top: 10px;
+}
+.player {
+  border-radius: 10px;
+  padding: 20px 0px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.player h2 {
+  margin: 0;
+  margin-right: 30px;
+  padding: 0;
+  width: 150px; 
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap; 
+}
+
+.player p {
+  font-size: 60px;
+}

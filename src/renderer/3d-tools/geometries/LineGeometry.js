@@ -1,5 +1,5 @@
 import { Geometry } from "pixi.js";
-import { addDataToBufferAttribute } from '../../utils'
+import { addDataToBufferAttribute } from 'utils'
 let tempArray1 = [];
 let tempArray2 = [];
 

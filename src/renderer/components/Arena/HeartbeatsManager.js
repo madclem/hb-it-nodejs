@@ -1,4 +1,4 @@
-import { CONSTS } from '../../consts';
+import { CONSTS } from 'consts';
 import { ipcRenderer } from 'electron';
 
 export class HeartbeatsManager {

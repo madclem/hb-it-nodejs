@@ -1,0 +1,20 @@
+@font-face {
+  font-family:'PTSans-Regular';
+  src:url('../fonts/PTSans-Regular.ttf') format('truetype');
+  font-style: normal;
+  font-stretch: normal;
+}
+
+@font-face {
+  font-family:'PTSans-Bold.ttf';
+  src:url('../fonts/PTSans-Bold.ttf') format('truetype');
+  font-style: normal;
+  font-stretch: normal;
+}
+
+@font-face {
+  font-family:'PTSans-Italic.ttf';
+  src:url('../fonts/PTSans-Italic.ttf') format('truetype');
+  font-style: normal;
+  font-stretch: normal;
+}

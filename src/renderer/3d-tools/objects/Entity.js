@@ -1,5 +1,5 @@
 export class Entity {
-  constructor (options) {
+  constructor (options = {}) {
 
     this.material = options.material;
     this.geometry = options.geometry;

@@ -1,5 +1,5 @@
 import { ViewPlayerCard } from './views/ViewPlayerCard';
-import { container3D } from '../../3d-tools';
+import { container3D } from '3d-tools';
 
 export class PlayersCardsManager {
   constructor(players, scene) {

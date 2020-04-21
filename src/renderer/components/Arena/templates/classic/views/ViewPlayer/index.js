@@ -1,9 +1,9 @@
-import { getControlPoints, map } from '../../../../utils';
+import { getControlPoints, map } from 'utils';
 
-import { CONSTS } from '../../../../consts';
-// ViewLine.js
-import LineGeometry from '../../../../3d-tools/geometries/LineGeometry';
-import { LineMaterial } from '../../../../3d-tools/materials/LineMaterial';
+import { CONSTS } from 'consts';
+// ViewPlayer.js
+import LineGeometry from '3d-tools/geometries/LineGeometry';
+import { LineMaterial } from '3d-tools/materials/LineMaterial';
 
 // import { ipcRenderer } from 'electron';
 
@@ -16,7 +16,7 @@ function getBezierXY(t, sx, sy, cp1x, cp1y, cp2x, cp2y, ex, ey) {
 }
 
 const tempArray = [];
-class ViewLine {
+class ViewPlayer {
 
 	constructor(color) {
 		this.material = new LineMaterial(color);
@@ -206,4 +206,4 @@ class ViewLine {
 
 }
 
-export default ViewLine;
+export default ViewPlayer;

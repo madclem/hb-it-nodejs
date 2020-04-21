@@ -2,11 +2,11 @@
 
 import { BaseRenderTexture, Container, Graphics, Rectangle, RenderTexture, Sprite, State, Text, TextStyle, Texture } from 'pixi.js';
 
-import { DiffuseMaterial } from '../../../../3d-tools/materials/DiffuseMaterial';
-import Entity3D from '../../../../3d-tools/objects/Entity3D';
-import PlaneGeometry from '../../../../3d-tools/geometries/PlaneGeometry';
-import { renderer } from '../../../../3d-tools/Application';
-import { smoothstep } from '../../../../utils';
+import { DiffuseMaterial } from '3d-tools/materials/DiffuseMaterial';
+import Entity3D from '3d-tools/objects/Entity3D';
+import PlaneGeometry from '3d-tools/geometries/PlaneGeometry';
+import { renderer } from '3d-tools/Application';
+import { smoothstep } from 'utils';
 
 export class ViewPlayerCard extends Entity3D {
 

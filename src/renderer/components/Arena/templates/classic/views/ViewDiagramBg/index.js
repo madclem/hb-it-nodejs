@@ -1,9 +1,9 @@
 // ViewLine.js
 
 import DiagramMaterial from './DiagramMaterial';
-import Entity3D from '../../../../3d-tools/objects/Entity3D';
-import PlaneGeometry from '../../../../3d-tools/geometries/PlaneGeometry';
-import { smoothstep } from '../../../../utils';
+import Entity3D from '3d-tools/objects/Entity3D';
+import PlaneGeometry from '3d-tools/geometries/PlaneGeometry';
+import { smoothstep } from 'utils';
 
 class ViewDiagramBg extends Entity3D {
 

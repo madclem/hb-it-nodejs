@@ -8,3 +8,4 @@ export { getCameraDistance } from './getCameraDistance';
 export { smoothstep } from './smoothstep';
 export { getBufferForAttribute } from './getBufferForAttribute';
 export { addDataToBufferAttribute } from './addDataToBufferAttribute';
+export { biasMatrix } from './biasMatrix';

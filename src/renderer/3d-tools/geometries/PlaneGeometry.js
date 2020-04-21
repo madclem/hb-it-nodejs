@@ -1,18 +1,5 @@
 import { Geometry } from 'pixi.js';
 
-/**
- * The Plane allows you to draw a texture across several points and them manipulate these points
- *
- *```js
- *
- * let plane = PlaneGeometry(10, 10, 4, 4);
- *
- * ```
- *
- * @class
- * @extends PIXI.Mesh
- * @ geometry
- */
 export default class PlaneGeometry extends Geometry
 {
     /**

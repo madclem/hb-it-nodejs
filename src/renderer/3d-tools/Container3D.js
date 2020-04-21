@@ -1,10 +1,13 @@
-import { DRAW_MODES, Rectangle, State } from 'pixi.js';
+import { DRAW_MODES, DisplayObject, Rectangle, State } from 'pixi.js';
 import { mat3, mat4 } from 'gl-matrix';
 
-import { Container } from 'pixi.js';
+import { LineShadowMaterial } from './materials/LineShadowMaterial';
+import { Shadow } from './Shadow'
 
 class Container3D {
   constructor() {
+    this.materialShadow = new LineShadowMaterial();
+    this.shadowsEntities = []
     this.identityMatrix          = mat4.create();
 		this._normalMatrix           = mat3.create();
 		this._inverseModelViewMatrix = mat3.create();
@@ -14,22 +17,33 @@ class Container3D {
     this.defaultState.depthTest = true;
     this.defaultState.blend = true;
 
+    this.listeners = []
+
     this.camera = null;
 
     this.entities = []
-    this.dummy = new Container();
+    this.dummy = new DisplayObject();
     this.dummy.filterArea = new Rectangle(0, 0, 10000, 10000);
-    this.dummy._render = this._render.bind(this); // hijack the render to render our 3d
+    this.dummy.render = this.render.bind(this); // hijack the render to render our 3d
+
+    this.shadow = new Shadow();
   }
 
   init (stage) {
     stage.addChild(this.dummy); // so we can go into the render
   }
 
+  addRenderListener (func) {
+    this.listeners.push(func);
+  }
+
   addChild (entity) {
     if (entity.material && entity.geometry) {
       this.entities.push(entity);
     }
+  }
+
+  setCameraShadow(cameraShadow) {
   }
 
   setCamera(camera) {
@@ -48,26 +62,84 @@ class Container3D {
 		mat3.invert(this._inverseModelViewMatrix, this._inverseModelViewMatrix);
   }
 
-  _render (renderer) {
+  addToShadows(entity) {
+    this.shadowsEntities.push(entity);
+  }
+
+  setRenderer(renderer) {
+    this.renderer = renderer
+  }
+
+  renderShadows (renderer) {
+    // this.shadow.renderShadow(renderer, this.shadowsEntities);
+    const currentCamera = this.camera;
+    this.setCamera(this.shadow.cameraLight)
+
+    const currentFramebuffer = this.renderer.framebuffer.current;
+    this.renderer.state.set(this.shadow.shadowState);
+    
+    this.renderer.framebuffer.bind(this.shadow.shadowFramebuffer);    
+    this.renderer.framebuffer.clear(1, 0, 0, 1);
+
+    this.renderer.gl.depthFunc(this.renderer.gl.LESS);
+    
+    this.renderEntities(this.shadowsEntities, this.renderer, true)
+    
+    this.renderer.framebuffer.bind(currentFramebuffer);
+    this.setCamera(currentCamera)
+  }
+
+  render (renderer) {
     renderer.batch.flush();
 
-    this.setMatrices(this.identityMatrix);
+    this.renderShadows(renderer)
+    
+    
 
-    for (let i = 0; i < this.entities.length; i++) {
-      const entity = this.entities[i];
+    renderer.framebuffer.clear(1, 0, 0, 1);
+    
+    this.setMatrices(this.identityMatrix);
+    const entities = this.entities;
+
+    
+    // if (output) {
+    //   renderer.renderTexture.clear();
+    // }
+    
+    this.renderEntities(this.entities, renderer);
+    
+    renderer.renderTexture.bind(null);
+    // if (!arrEntities) {
+    //   for (let i = 0; i < this.listeners.length; i++) {
+    //     this.listeners[i](renderer);
+    //   }
+    // }
+  }
+
+  renderEntities (entities, renderer, isShadow) {
+    for (let i = 0; i < entities.length; i++) {
+      const entity = entities[i];
       
       const geometry = entity.geometry;
-      const material = entity.material;
+      const material = isShadow ? this.materialShadow : entity.material;
       const state = entity.state || this.defaultState;
       const matrix = entity.matrix;
       
       const uniforms = material.uniforms;
     
     // update material matrices
-      if(this.camera) {
-        material.uniforms.uProjectionMatrix = this.camera.projection;
-        material.uniforms.uViewMatrix = this.camera.matrix;
+      const camera = this.camera;
+      if(camera) {
+        material.uniforms.uProjectionMatrix = camera.projection;
+        material.uniforms.uViewMatrix = camera.matrix;
       }
+
+      if(isShadow) {
+        material.uniforms.thickness =  .1;
+		    material.uniforms.aspect =  window.innerWidth / window.innerHeight;
+		    material.uniforms.resolutions =  [window.innerWidth, window.innerHeight];
+      }
+      
     
 		  if (matrix) this.setMatrices(matrix);
       else this.setMatrices(this.identityMatrix);
@@ -90,14 +162,22 @@ class Container3D {
       }
         
       renderer.shader.bind(material);
+
       renderer.state.set(state);
 
       renderer.geometry.bind(geometry);
-      renderer.geometry.draw(geometry.drawType || DRAW_MODES.TRIANGLES, geometry.size, geometry.start, geometry.instanceCount);
+      const drawMode = entity.drawMode !== undefined ? entity.drawMode : DRAW_MODES.TRIANGLES;
+      
+      renderer.geometry.draw(drawMode, geometry.size, geometry.start, geometry.instanceCount);
 
-      renderer.renderTexture.bind(null);
+      if (!isShadow) {
+        renderer.renderTexture.bind(null);
+      }
+
     }
   }
+
+
 }
 
 export const container3D = new Container3D();

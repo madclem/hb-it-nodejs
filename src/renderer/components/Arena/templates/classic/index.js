@@ -1,8 +1,8 @@
-import { Player } from '../../Player';
-import { PlayersCardsManager } from '../../PlayersCardsManager'
-import ViewDiagramBg from '../../views/ViewDiagramBg';
-import { container3D } from '../../../../3d-tools';
-import { getCameraDistance } from '../../../../utils'
+import { Player } from './Player';
+import { PlayersCardsManager } from './PlayersCardsManager'
+import ViewDiagramBg from './views/ViewDiagramBg';
+import { container3D } from '3d-tools';
+import { getCameraDistance } from 'utils';
 
 class Classic {
   constructor ({devices, camera, orbitalControl, container2D}) {
